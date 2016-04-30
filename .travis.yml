@@ -21,6 +21,12 @@ before_install:
   -d
 - openssl aes-256-cbc -pass pass:$ENCRYPTION_PASSWORD -in pubring.gpg.enc -out ~/.gnupg/pubring.gpg
   -d
+- openssl aes-256-cbc -pass pass:$ENCRYPTION_PASSWORD -in local/jndi-1.2.1.jar.enc -out local/jndi-1.2.1.jar
+  -d
+- openssl aes-256-cbc -pass pass:$ENCRYPTION_PASSWORD -in local/jta-1.0.1.jar.enc -out local/jta-1.0.1.jar
+  -d
+- mvn install:install-file -Dfile=local/jndi-1.2.1.jar -DgroupId=jndi -DartifactId=jndi -Dversion=1.2.1 -Dpackaging=jar
+- mvn install:install-file -Dfile=local/jta-1.0.1.jar -DgroupId=jta -DartifactId=jta -Dversion=1.0.1 -Dpackaging=jar
 - echo "<settings><servers><server><id>ossrh</id><username>\${OSSRH_JIRA_USERNAME}</username><password>\${OSSRH_JIRA_PASSWORD}</password></server></servers></settings>"
   > ~/.m2/settings.xml
 install:
@@ -32,6 +38,8 @@ script:
 after_script:
 - rm ~/.gnupg/secring.gpg
 - rm ~/.gnupg/pubring.gpg
+- rm local/jndi-1.2.1.jar
+- rm local/jta-1.0.1.jar
 - rm ~/.m2/settings.xml
 notifications:
   email: true
