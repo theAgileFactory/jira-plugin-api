@@ -1,0 +1,234 @@
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+	<modelVersion>4.0.0</modelVersion>
+	<groupId>com.agifac.lib</groupId>
+	<artifactId>jira-plugin-api</artifactId>
+	<version>1.0.1-SNAPSHOT</version>
+	<name>BizDock JIRA plugin</name>
+	<description>This component provide APIs to BizDock for accessing JIRA data</description>
+    <packaging>atlassian-plugin</packaging>
+	<url>https://github.com/theAgileFactory</url>
+
+	<licenses>
+		<license>
+			<name>GNU General Public License, version 2</name>
+			<url>http://www.gnu.org/licenses/old-licenses/gpl-2.0.txt</url>
+		</license>
+	</licenses>
+	
+	<scm>
+		<connection>scm:git:https://github.com/theAgileFactory/jira-plugin-api.git</connection>
+		<developerConnection>scm:git:https://github.com/theAgileFactory/jira-plugin-api.git</developerConnection>
+		<url>scm:git:https://github.com/theAgileFactory/jira-plugin-api.git</url>
+		<tag>HEAD</tag>
+	</scm>
+	
+	<developers>
+		<developer>
+			<id>pycloux</id>
+			<name>Pierre-Yves Cloux</name>
+			<email>dev@pycloux.com</email>
+		</developer>
+	</developers>
+	
+	<repositories>
+		<repository>
+			<id>typesafe</id>
+			<name>typesafe-releases</name>
+			<url>http://repo.typesafe.com/typesafe/releases/</url>
+		</repository>
+		<repository>
+           <id>atlassian-public</id>
+           <url>https://m2proxy.atlassian.com/repository/public</url>
+           <snapshots>
+             <enabled>true</enabled>
+             <updatePolicy>daily</updatePolicy>
+             <checksumPolicy>warn</checksumPolicy>
+           </snapshots>
+           <releases>
+             <enabled>true</enabled>
+             <checksumPolicy>warn</checksumPolicy>
+           </releases>
+         </repository>
+		<repository>
+            <id>sonatype-snapshots</id>
+            <name>sonatype-snapshots</name>
+            <url>https://oss.sonatype.org/content/repositories/snapshots</url>
+        </repository>   
+	</repositories>
+
+	<properties>
+		<project.build.sourceEncoding>latin1</project.build.sourceEncoding>
+		<java.source>1.7</java.source>
+		<java.target>1.7</java.target>
+		<junit.version>4.10</junit.version>
+        <jira.version>6.2.7</jira.version>
+        <amps.version>5.0.4</amps.version>
+        <plugin.testrunner.version>1.2.0</plugin.testrunner.version>
+		<!-- TestKit version 5.x for JIRA 5.x, 6.x for JIRA 6.x -->
+		<testkit.version>5.2.26</testkit.version>
+	</properties>
+	
+	<pluginRepositories>
+		<pluginRepository>
+			<id>typesafe-plugin</id>
+			<url>http://repo.typesafe.com/typesafe/repo/</url>
+			<releases>
+				<enabled>false</enabled>
+			</releases>
+		</pluginRepository>
+		<pluginRepository>
+           <id>atlassian-public</id>
+           <url>https://m2proxy.atlassian.com/repository/public</url>
+           <releases>
+             <enabled>true</enabled>
+             <checksumPolicy>warn</checksumPolicy>
+           </releases>
+           <snapshots>
+             <checksumPolicy>warn</checksumPolicy>
+           </snapshots>
+         </pluginRepository>
+	</pluginRepositories>
+
+	<distributionManagement>
+		<snapshotRepository>
+			<id>ossrh</id>
+			<url>https://oss.sonatype.org/content/repositories/snapshots</url>
+		</snapshotRepository>
+	</distributionManagement>
+
+	<dependencies>
+		<dependency>
+		    <groupId>org.webjars</groupId>
+		    <artifactId>bootstrap</artifactId>
+		    <version>3.3.2-2</version>
+		</dependency>
+        <dependency>
+            <groupId>com.atlassian.jira</groupId>
+            <artifactId>jira-api</artifactId>
+            <version>${jira.version}</version>
+            <scope>provided</scope>
+        </dependency>
+        <dependency>
+            <groupId>com.atlassian.plugins.rest</groupId>
+            <artifactId>atlassian-rest-common</artifactId>
+            <version>1.0.2</version>
+            <scope>provided</scope>
+        </dependency>
+		<dependency>
+			<groupId>org.springframework</groupId>
+			<artifactId>spring-context</artifactId>
+			<version>2.5.6</version>
+			<scope>provided</scope>
+		</dependency>
+		<dependency>
+			<groupId>commons-jexl</groupId>
+			<artifactId>commons-jexl</artifactId>
+			<version>1.1</version>
+			<scope>provided</scope>
+		</dependency>
+		<dependency>
+			<groupId>org.apache.commons</groupId>
+			<artifactId>commons-lang3</artifactId>
+			<version>3.1</version>
+			<scope>provided</scope>
+		</dependency>
+		<dependency>
+			<groupId>commons-collections</groupId>
+			<artifactId>commons-collections</artifactId>
+			<version>3.2.1</version>
+			<scope>provided</scope>
+		</dependency>
+		
+        <!-- Add dependency on jira-core if you want access to JIRA implementation classes as well as the sanctioned API. -->
+        <!-- This is not normally recommended, but may be required eg when migrating a plugin originally developed against JIRA 4.x -->
+        <dependency>
+            <groupId>com.atlassian.jira</groupId>
+            <artifactId>jira-core</artifactId>
+            <version>${jira.version}</version>
+            <scope>provided</scope>
+        </dependency>
+        <dependency>
+            <groupId>mysql</groupId>
+            <artifactId>mysql-connector-java</artifactId>
+            <version>5.1.31</version>
+            <scope>compile</scope>
+        </dependency>
+        <dependency>
+			<groupId>commons-dbcp</groupId>
+			<artifactId>commons-dbcp</artifactId>
+			<version>1.4</version>
+            <scope>provided</scope>
+		</dependency>
+
+        <!-- WIRED TEST RUNNER DEPENDENCIES -->
+        <dependency>
+            <groupId>com.atlassian.plugins</groupId>
+            <artifactId>atlassian-plugins-osgi-testrunner</artifactId>
+            <version>${plugin.testrunner.version}</version>
+            <scope>test</scope>
+        </dependency>
+        <dependency>
+            <groupId>javax.ws.rs</groupId>
+            <artifactId>jsr311-api</artifactId>
+            <version>1.1.1</version>
+            <scope>provided</scope>
+        </dependency>
+        <dependency>
+            <groupId>com.google.code.gson</groupId>
+            <artifactId>gson</artifactId>
+            <version>2.2.2-atlassian-1</version>
+        </dependency>
+
+		<!-- Uncomment to use TestKit in your project. Details at https://bitbucket.org/atlassian/jira-testkit -->
+		<!-- You can read more about TestKit at https://developer.atlassian.com/display/JIRADEV/Plugin+Tutorial+-+Smarter+integration+testing+with+TestKit -->
+		<!--
+		<dependency>
+			<groupId>com.atlassian.jira.tests</groupId>
+			<artifactId>jira-testkit-client</artifactId>
+			<version>${testkit.version}</version>
+			<scope>test</scope>
+		</dependency>
+		-->
+		<dependency>
+			<groupId>junit</groupId>
+			<artifactId>junit</artifactId>
+			<version>${junit.version}</version>
+			<scope>test</scope>
+		</dependency>
+	</dependencies>
+
+	<build>
+		<plugins>
+            <plugin>
+                <groupId>com.atlassian.maven.plugins</groupId>
+                <artifactId>maven-jira-plugin</artifactId>
+                <version>${amps.version}</version>
+                <extensions>true</extensions>
+                <configuration>
+                    <productVersion>${jira.version}</productVersion>
+                    <productDataVersion>${jira.version}</productDataVersion>
+					<!-- Uncomment to install TestKit backdoor in JIRA. -->
+					<!--
+					<pluginArtifacts>
+						<pluginArtifact>
+							<groupId>com.atlassian.jira.tests</groupId>
+							<artifactId>jira-testkit-plugin</artifactId>
+							<version>${testkit.version}</version>
+						</pluginArtifact>
+					</pluginArtifacts>
+					-->
+                </configuration>
+            </plugin>
+			<plugin>
+				<groupId>org.apache.maven.plugins</groupId>
+				<artifactId>maven-compiler-plugin</artifactId>
+				<version>${maven-compiler-plugin.version}</version>
+				<configuration>
+					<source>${java.source}</source>
+					<target>${java.target}</target>
+				</configuration>
+			</plugin>
+		</plugins>
+
+	</build>
+</project>
