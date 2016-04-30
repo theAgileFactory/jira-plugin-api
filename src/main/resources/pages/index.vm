@@ -1,0 +1,208 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="UTF-8">
+<title>BizDock JIRA plugin configuration</title>
+<link href="${rootContext}/resources/bootstrap/3.3.2-2/css/bootstrap.min.css" rel="stylesheet">
+</head>
+<body>
+    <div class="navbar navbar-default navbar-static-top" role="navigation" style="position: inherit;">
+        <div class="container">
+            <div class="navbar-header">
+                <button type="button" class="navbar-toggle" data-toggle="collapse" data-target=".navbar-collapse">
+                    <span class="sr-only">Toggle navigation</span>
+                    <span class="icon-bar"></span>
+                    <span class="icon-bar"></span>
+                    <span class="icon-bar"></span>
+                </button>
+                <a class="navbar-brand" href="/">
+                    <span style="font-size: 28px; font-family: 'Open Sans', sans-serif; font-weight: 600;">
+                        <font color="#777777">Biz</font><font color="#558ed5">D</font><font color="#777777">ock</font>
+                    </span>
+                    for Jira
+                </a>
+            </div>
+            <div class="collapse navbar-collapse">
+                <ul id="topmenubar-navbar-left" class="nav navbar-nav navbar-left"></ul>
+                <ul class="nav navbar-nav navbar-right">
+                    <li><a href="${baseUrl}"><i class="glyphicon glyphicon-home"></i>&nbsp;JIRA home</a></li>
+                </ul>
+            </div>
+        </div>
+    </div>
+    
+    <div class="container-fluid">
+        <div class="row">
+            <div class="col-md-12">
+                <div class="alert alert-info" role="alert">
+                <p>Please refer to BizDock documentation for detailed explanations regarding the plugin configuration.</p>
+                <p><a class="btn btn-primary" href="https://help.bizdock.io/doku.php?id=admin-guide:plugins:professional:jira-plugin"><i class="glyphicon glyphicon-info-sign"></i>&nbsp;BizDock support site</a></p>
+                </div>
+            </div>
+        </div>
+         <div class="row">
+            <div class="col-md-12">
+                <div class="panel-group" id="accordion" role="tablist" aria-multiselectable="true">
+                  <div class="panel panel-default">
+                    <div class="panel-heading" role="tab" id="headingMainConfiguration">
+                      <h4 class="panel-title">
+                        <a data-toggle="collapse" data-parent="#accordion" href="#collapseMainConfiguration" aria-expanded="true" aria-controls="collapseMainConfiguration">
+                          Main configuration
+                        </a>
+                      </h4>
+                    </div>
+                    <div id="collapseMainConfiguration" class="panel-collapse collapse in" role="tabpanel" aria-labelledby="headingMainConfiguration">
+                      <div class="panel-body">
+                        My BizDock secret key:
+                        <pre>${secretKey}</pre>
+                        <p><small>Please configure this secret key in your BizDock instance in order to allow BizDock to collect JIRA data.</small></p>
+                        <p><a class="btn btn-warning" href="${rootContext}/actions/resetSecretKey"><i class="glyphicon glyphicon-refresh"></i>&nbsp;Reset your secret key</a></p>
+                        <hr/>
+                        <p>Please press the button below if you need to reset the plugin configuration to its default</p>
+                        <p><a class="btn btn-warning" onclick="return confirm('WARNING: this will overwrite your previous configuration, do you still want to proceed ?');" href="${rootContext}/actions/resetConfig"><i class="glyphicon glyphicon-warning-sign"></i>&nbsp;Reset the plugin configuration</a></p>
+                      </div>
+                    </div>
+                  </div>
+                  <div class="panel panel-default">
+                    <div class="panel-heading" role="tab" id="headingProjectConfiguration">
+                      <h4 class="panel-title">
+                        <a class="collapsed" data-toggle="collapse" data-parent="#accordion" href="#collapseProjectConfiguration" aria-expanded="true" aria-controls="collapseProjectConfiguration">
+                          Projects creation configuration
+                        </a>
+                      </h4>
+                    </div>
+                    <div id="collapseProjectConfiguration" class="panel-collapse collapse" role="tabpanel" aria-labelledby="headingProjectConfiguration">
+                      <div class="panel-body">
+                        <form class="form-horizontal" method="POST" action="${rootContext}/actions/update_project_creation">
+                          <div class="form-group">
+                            <label for="userForProjectCreation" class="col-sm-2 control-label">User to be used to create new projects</label>
+                            <div class="col-sm-10">
+                              <select name="userForProjectCreation" class="form-control">
+                                #foreach($adminUser in $adminUsers)
+                                <option #if($jiraPluginServiceProvider.getPluginConfiguration().getUserForProjectCreation().equals($adminUser.getName())) selected="selected" #end value="$adminUser.getName()">$adminUser.getDisplayName()</option>
+                                #end
+                              </select>
+                            </div>
+                          </div>
+                          <div class="form-group">
+                            <div class="col-sm-offset-2 col-sm-10">
+                                <input class="btn btn-primary" type="submit" value="Update"/>
+                            </div>
+                          </div>
+                        </form>
+                      </div>
+                    </div>
+                  </div>
+                  <div class="panel panel-default">
+                    <div class="panel-heading" role="tab" id="headingMapping">
+                      <h4 class="panel-title">
+                        <a class="collapsed" data-toggle="collapse" data-parent="#accordion" href="#collapseMapping" aria-expanded="false" aria-controls="collapseMapping">
+                          Data mapping configuration
+                        </a>
+                      </h4>
+                    </div>
+                    <div id="collapseMapping" class="panel-collapse collapse" role="tabpanel" aria-labelledby="headingMapping">
+                      <div class="panel-body">
+                        <form method="POST" action="${rootContext}/actions/update_mapping">
+                            <table class="table table-hover table-condensed">
+                              <thead>
+                                <tr>
+                                  <th>BizDock field</th>
+                                  <th>Default JIRA field</th>
+                                  <th>Mapped JIRA field</th>
+                                </tr>
+                              </thead>
+                              <tbody>
+                                #foreach($bizdockField in $jiraPluginServiceProvider.getPluginConfiguration().getMappingBizDockJira().keySet())
+                                #set($jiraFields = $jiraPluginServiceProvider.getAllJiraFieldsFor($bizdockField))
+                                <tr>
+                                    <th>$bizdockField.name()</th>
+                                    <td>
+                                    #if($jiraFields.get($bizdockField.getDefaultJiraField())) $jiraFields.get($bizdockField.getDefaultJiraField()) #end
+                                    </td>
+                                    <td>
+                                        #if($bizdockField.isConfigurable())
+                                        <select name="$bizdockField.name()" class="form-control">
+                                            <option value=""></options>
+                                            #foreach($jiraFieldKey in $jiraFields.keySet())
+                                                <option #if($jiraFieldKey==$jiraPluginServiceProvider.getPluginConfiguration().getMappingBizDockJira().get($bizdockField)) selected="selected" #end value="$jiraFieldKey">$jiraFields.get($jiraFieldKey)</option>
+                                            #end
+                                        </select>
+                                        #end
+                                    </td>
+                                </tr>
+                                #end
+                              </tbody>
+                            </table>
+                            <input class="btn btn-primary" type="submit" value="Update mapping"/>
+                        </form>
+                      </div> 
+                    </div>
+                  </div>
+                  <div class="panel panel-default">
+                    <div class="panel-heading" role="tab" id="headingFiltering">
+                      <h4 class="panel-title">
+                        <a class="collapsed" data-toggle="collapse" data-parent="#accordion" href="#collapseFiltering" aria-expanded="false" aria-controls="collapseFiltering">
+                          #if($needsJqlQueryTemplateError || $defectsJqlQueryTemplateError)
+                          <div class="alert alert-danger" role="alert">
+                          Data filtering configuration
+                          </div>
+                          #else
+                          Data filtering configuration
+                          #end
+                        </a>
+                      </h4>
+                    </div>
+                    <div id="collapseFiltering" class="panel-collapse collapse" role="tabpanel" aria-labelledby="headingFiltering">
+                      <div class="panel-body">
+                        <form class="form-horizontal" method="POST" action="${rootContext}/actions/update_filtering">
+                          <div class="form-group #if($needsJqlQueryTemplateError) has-error #end">
+                            <label for="needsJqlQueryTemplate" class="col-sm-2 control-label">Needs JQL query template</label>
+                            <div class="col-sm-10">
+                              <textarea class="form-control" id="needsJqlQueryTemplate" name="needsJqlQueryTemplate" rows="3">$jiraPluginServiceProvider.getPluginConfiguration().getNeedsJqlQueryTemplate()</textarea>
+                              <p class="help-block">
+                              #if($needsJqlQueryTemplateError)
+                              $needsJqlQueryTemplateError
+                              #else
+                              $projectTagInJql will be replaced with the project key at runtime
+                              #end
+                              </p>
+                            </div>
+                          </div>
+                          <div class="form-group #if($defectsJqlQueryTemplateError) has-error #end">
+                            <label for="defectsJqlQueryTemplate" class="col-sm-2 control-label">Defects JQL query template</label>
+                            <div class="col-sm-10">
+                              <textarea class="form-control" id="defectsJqlQueryTemplate" name="defectsJqlQueryTemplate" rows="3">$jiraPluginServiceProvider.getPluginConfiguration().getDefectsJqlQueryTemplate()</textarea>
+                              <p class="help-block">
+                              #if($defectsJqlQueryTemplateError)
+                              $defectsJqlQueryTemplateError
+                              #else
+                              $projectTagInJql will be replaced with the project key at runtime
+                              #end
+                              </p>
+                            </div>
+                          </div>
+                          <div class="form-group">
+                            <div class="col-sm-offset-2 col-sm-10">
+                                <input class="btn btn-primary" type="submit" value="Update filtering"/>
+                            </div>
+                          </div>
+                        </form>
+                      </div>
+                    </div>
+                    ## end
+                    
+                  </div> 
+                </div>
+            </div>
+        </div>
+    </div>
+    
+    <footer>
+        <div class="pull-left">&copy; <a href="http://www.the-agile-factory.com/">The Agile Factory</a></div>
+    </footer>
+    
+    <script src="${rootContext}/resources/jquery/1.11.1/jquery.min.js"></script>
+    <script src="${rootContext}/resources/bootstrap/3.3.2-2/js/bootstrap.min.js"></script>
+</body>
+</html>

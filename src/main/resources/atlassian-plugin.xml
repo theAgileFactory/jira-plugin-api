@@ -1,0 +1,60 @@
+<atlassian-plugin key="${project.groupId}.${project.artifactId}"
+	name="${project.name}" plugins-version="2">
+	<plugin-info>
+		<description>${project.description}</description>
+		<version>${project.version}</version>
+		<vendor name="${project.organization.name}" url="${project.organization.url}" />
+		<param name="plugin-icon">images/pluginIcon.png</param>
+		<param name="plugin-logo">images/pluginLogo.png</param>
+		<param name="configure.url">/plugins/servlet/tafconfig/pages/index</param>
+	</plugin-info>
+
+	<!-- add our i18n resource -->
+	<resource type="i18n" name="i18n" location="jira-plugin-api" />
+
+	<!-- add our web resources -->
+	<web-resource key="jira-plugin-api-resources" name="jira-plugin-api Web Resources">
+		<dependency>com.atlassian.auiplugin:ajs</dependency>
+		<dependency>com.atlassian.auiplugin:jquery-ui</dependency>
+		<dependency>com.atlassian.auiplugin:jquery-ui-other</dependency>
+		<resource type="download" name="jira-plugin-api.css"
+			location="/css/jira-plugin-api.css" />
+		<resource type="download" name="jira-plugin-api.js" location="/js/jira-plugin-api.js" />
+		<resource type="download" name="images/" location="/images" />
+		<context>jira.general</context>
+		<context>jira-plugin-api</context>
+	</web-resource>
+
+	<servlet key="tafConfigurationServlet" name="jira-plugin-api Servlet"
+		class="com.agifac.lib.jira.plugin.api.services.JiraPluginConfigurationServlet">
+		<description>Configuration servlet for the plugin</description>
+		<url-pattern>/tafconfig/*</url-pattern>
+	</servlet>
+
+	<!-- listener component -->
+	<component-import key="eventPublisher"
+		interface="com.atlassian.event.api.EventPublisher" />
+	<component-import key="pluginSettingsFactory"
+		interface="com.atlassian.sal.api.pluginsettings.PluginSettingsFactory" />
+	<component-import key="userManager"
+        interface="com.atlassian.sal.api.user.UserManager" />
+    <component-import key="loginUriProvider"
+        interface="com.atlassian.sal.api.auth.LoginUriProvider" />
+
+	<!-- components -->
+	<component key="tafBizDockPluginServiceProvider"
+		class="com.agifac.lib.jira.plugin.api.services.JiraPluginServiceProvider">
+		<description>Class which implements the services for the plugin
+			components</description>
+	</component>
+
+	<!-- Rest service -->
+	<rest key="tafBizDockJiraAPIService" path="/taf_api" version="1.0">
+		<description>A REST service which provides JSON data for BizDock
+		</description>
+	</rest>
+
+	<!-- import from the product container -->
+	<component-import key="applicationProperties"
+		interface="com.atlassian.sal.api.ApplicationProperties" />
+</atlassian-plugin>
