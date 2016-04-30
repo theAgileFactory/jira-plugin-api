@@ -1,0 +1,44 @@
+language: java
+jdk:
+- oraclejdk8
+env:
+  global:
+  - ACTIVATOR_VERSION=1.3.7
+  - ACTIVATOR_ZIP_FILE=typesafe-activator-${ACTIVATOR_VERSION}-minimal.zip
+  - ACTIVATOR_ZIP_URL=http://downloads.typesafe.com/typesafe-activator/${ACTIVATOR_VERSION}/${ACTIVATOR_ZIP_FILE}
+  - PLAY2_HOME=${TRAVIS_BUILD_DIR}/activator-${ACTIVATOR_VERSION}-minimal
+  - SBT_EXECUTABLE_NAME=activator
+  - GH_REF=github.com/theAgileFactory/jira-plugin-api
+before_install:
+- sudo apt-get update
+- sudo apt-get install --only-upgrade -y oracle-java8-installer
+- mkdir -p ~/.gnupg
+- openssl aes-256-cbc -pass pass:$ENCRYPTION_PASSWORD -in secring.gpg.enc -out ~/.gnupg/secring.gpg
+  -d
+- openssl aes-256-cbc -pass pass:$ENCRYPTION_PASSWORD -in pubring.gpg.enc -out ~/.gnupg/pubring.gpg
+  -d
+- echo "<settings><servers><server><id>ossrh</id><username>\${OSSRH_JIRA_USERNAME}</username><password>\${OSSRH_JIRA_PASSWORD}</password></server></servers></settings>"
+  > ~/.m2/settings.xml
+install:
+- wget ${ACTIVATOR_ZIP_URL}
+- unzip -q ${ACTIVATOR_ZIP_FILE}
+script:
+- mvn -f pom2.xml clean install gpg:sign -Dgpg.passphrase="${GPG_PASSPHRASE}" --settings
+  ~/.m2/settings.xml
+after_script:
+- rm ~/.gnupg/secring.gpg
+- rm ~/.gnupg/pubring.gpg
+- rm ~/.m2/settings.xml
+notifications:
+  email: true
+branches:
+  only:
+  - master
+scala:
+- 2.11.8
+cache:
+  directories:
+  - .autoconf
+  - ~/.m2
+  - ~/.sbt
+  - ~/.ivy
